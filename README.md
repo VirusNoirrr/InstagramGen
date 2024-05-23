@@ -1,8 +1,8 @@
-# Capmonster-Checker
+# Instagram Account Creator
 ----
 <div align="center">
   <kbd>
-  <a href="https://github.com/VirusNoirrr/Capmonster-Checker">
+  <a href="https://github.com/VirusNoirrr/InstagramGen">
     <a href="https://imgbb.com/"><img src="https://i.ibb.co/vc3T3S3/image.png" alt="image" border="0"></a>
   </a>
   </kbd>
