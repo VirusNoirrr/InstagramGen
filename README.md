@@ -1,4 +1,4 @@
-# Instagram Account Creator
+# Instagram Account Creator (star repo for more updates)
 ----
 <div align="center">
   <kbd>
