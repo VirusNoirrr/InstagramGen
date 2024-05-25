@@ -9,6 +9,7 @@ import random
 import tls_client
 from colorama import Fore,Style;blue = Fore.BLUE;red = Fore.RED;warn = Fore.YELLOW;green = Fore.GREEN;gray = Fore.LIGHTBLACK_EX;white_red = Fore.LIGHTRED_EX;white_green = Fore.LIGHTGREEN_EX;white_warn = Fore.LIGHTYELLOW_EX;white_blue = Fore.LIGHTBLUE_EX;reset_colors = Style.RESET_ALL; pink = Fore.MAGENTA
 from datetime import datetime
+import encryption
 settings = json.loads(open("settings.json").read())
 proxies = open("proxies.txt").read().splitlines()
 generated = 0
@@ -203,11 +204,14 @@ class Kopeechka:
         return request.get("mail"), request.get("id")
     def getMessage(self, id):
         while True:
-            time.sleep(5)
-            request = rr.get(f"https://api.kopeechka.store/mailbox-get-message?full=1&spa=1&id={id}&token={self.apikey}").json()
-            if request.get("status").lower() == "ok":
-                self.deleteEmail(id)
-                return request.get("value")
+            #time.sleep(5)
+            try:
+                request = rr.get(f"https://api.kopeechka.store/mailbox-get-message?full=1&spa=1&id={id}&token={self.apikey}").json()
+                if request.get("status").lower() == "ok":
+                    self.deleteEmail(id)
+                    return request.get("value")
+            except:
+                pass
     def deleteEmail(self, id):
         return rr.get(f"https://api.kopeechka.store/mailbox-cancel?id={id}&token={self.apikey}").json().get("status")
     
@@ -313,7 +317,8 @@ class Gen:
         else:
             console.warn(f"Failed to confirm code {reset_colors}[{gray}Status code: {warn}{request.status_code}{reset_colors}]", t=1)
             return False
-        encpassword = f"#PWD_INSTAGRAM_BROWSER:0:{int(time.time())}:VirusNoirONTOP!FORREAL"
+        password = "VirusNoirONTOP!FORREAL"
+        encpassword = encryption.encryptPassword(password)
         payload = {
             "enc_password": encpassword,
             "day": "16",
@@ -327,19 +332,19 @@ class Gen:
             "tos_version": "row",
             "force_sign_up_code": signup_code
         }
-
+        time.sleep(5)
         request = requests.post("https://www.instagram.com/api/v1/web/accounts/web_create_ajax/", headers=headers, data=payload)
         if request.status_code in ok or request.status_code == 572:
             js = request.json() if request.status_code in ok else {"account_created": True, "user_id": "Not provided"}
             if js.get("account_created") == True:
                 generated += 1
-                console.success(f"Account created {reset_colors}[{gray}User ID: {blue}{js.get('user_id')}{reset_colors}, {gray}Username: {blue}{username}{reset_colors}, {gray}Email: {blue}{email}{reset_colors}, {gray}Password: {blue}Opera_browser!!11{reset_colors}, {gray}Account Status: {f'{red}LOCKED' if request.status_code not in ok else f'{white_green}UNLOCKED'}{reset_colors}]")
+                console.success(f"Account created {reset_colors}[{gray}User ID: {blue}{js.get('user_id')}{reset_colors}, {gray}Username: {blue}{username}{reset_colors}, {gray}Email: {blue}{email}{reset_colors}, {gray}Password: {blue}{password}{reset_colors}, {gray}Account Status: {f'{red}LOCKED' if request.status_code not in ok else f'{white_green}UNLOCKED'}{reset_colors}]")
                 sessionId = request.cookies.get("sessionid")
                 with open("accounts.txt", "a") as f:
-                    f.write(f"{username}:VirusNoirONTOP!FORREAL:{email}:{sessionId}\n")
+                    f.write(f"{username}:{password}:{email}:{sessionId}\n")
                 return True
         failed += 1
-        console.warn("Failed to create account", t=1)
+        console.warn(f"Failed to create account, {gray}[StatusCode: {warn}{request.status_code}{gray}]", t=1)
 gen = Gen()
 def main():
     accsToGen = int(console.input("Num of accs to gen > "))
